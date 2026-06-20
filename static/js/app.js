@@ -10,6 +10,8 @@ const feedContainer = document.getElementById('feed-container');
 const refreshBtn = document.getElementById('refresh-btn');
 const refreshIcon = document.getElementById('refresh-icon');
 const exportCsvBtn = document.getElementById('export-csv-btn');
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
 const searchInput = document.getElementById('search-input');
 const clearSearchBtn = document.getElementById('clear-search');
 const filterChips = document.querySelectorAll('.filter-chip');
@@ -39,8 +41,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // Event Listeners
   refreshBtn.addEventListener('click', fetchReleases);
   exportCsvBtn.addEventListener('click', exportToCSV);
+  themeToggle.addEventListener('click', toggleTheme);
   searchInput.addEventListener('input', handleSearch);
   clearSearchBtn.addEventListener('click', clearSearch);
+  
+  // Apply saved theme
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-theme');
+    updateThemeUI(true);
+  }
   
   // Filter chips selection
   filterChips.forEach(chip => {
@@ -502,4 +512,26 @@ function exportToCSV() {
   document.body.removeChild(link);
   
   showToast('CSV export downloaded successfully!', 'success');
+}
+
+function toggleTheme() {
+  const isLightTheme = document.body.classList.toggle('light-theme');
+  localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
+  updateThemeUI(isLightTheme);
+  showToast(`Swapped to ${isLightTheme ? 'Light' : 'Dark'} mode`, 'success');
+}
+
+function updateThemeUI(isLight) {
+  const label = themeToggle.querySelector('span');
+  if (isLight) {
+    themeIcon.setAttribute('data-lucide', 'moon');
+    if (label) label.textContent = 'Dark';
+    themeToggle.title = 'Switch to Dark Theme';
+  } else {
+    themeIcon.setAttribute('data-lucide', 'sun');
+    if (label) label.textContent = 'Light';
+    themeToggle.title = 'Switch to Light Theme';
+  }
+  // Reinitialize icons to swap SVG paths
+  lucide.createIcons();
 }
