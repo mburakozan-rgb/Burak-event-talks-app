@@ -9,6 +9,7 @@ let searchQuery = '';
 const feedContainer = document.getElementById('feed-container');
 const refreshBtn = document.getElementById('refresh-btn');
 const refreshIcon = document.getElementById('refresh-icon');
+const exportCsvBtn = document.getElementById('export-csv-btn');
 const searchInput = document.getElementById('search-input');
 const clearSearchBtn = document.getElementById('clear-search');
 const filterChips = document.querySelectorAll('.filter-chip');
@@ -37,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Event Listeners
   refreshBtn.addEventListener('click', fetchReleases);
+  exportCsvBtn.addEventListener('click', exportToCSV);
   searchInput.addEventListener('input', handleSearch);
   clearSearchBtn.addEventListener('click', clearSearch);
   
@@ -461,4 +463,43 @@ function escapeHtml(string) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+function exportToCSV() {
+  if (filteredReleases.length === 0) {
+    showToast('No data available to export', 'error');
+    return;
+  }
+  
+  // CSV Headers
+  const headers = ['ID', 'Date', 'Type', 'URL', 'Description'];
+  
+  // Format rows
+  const rows = filteredReleases.map(release => [
+    release.id,
+    release.date,
+    release.type,
+    release.link,
+    // Double quotes inside text must be escaped by doubling them
+    release.text.replace(/"/g, '""')
+  ]);
+  
+  // Build CSV string
+  const csvContent = [
+    headers.join(','),
+    ...rows.map(row => row.map(val => `"${val}"`).join(','))
+  ].join('\n');
+  
+  // Create download link
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `bigquery_release_notes_${new Date().toISOString().slice(0,10)}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  showToast('CSV export downloaded successfully!', 'success');
 }

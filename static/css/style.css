@@ -126,6 +126,12 @@ body {
   border-bottom: 1px solid var(--border-color);
 }
 
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
 .header-logo {
   display: flex;
   align-items: center;
@@ -971,6 +977,9 @@ dialog[open]::backdrop {
   
   .header-actions {
     width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
   }
   
   .header-actions .btn {
