@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BigQuery Release Insights</title>
+  <meta name="description" content="Track and share Google Cloud BigQuery release notes and updates. Select updates and share directly to Twitter.">
+  
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Custom CSS stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  
+  <!-- Theme / Background Glows -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- App Shell -->
+  <div class="app-container">
+    
+    <!-- App Header -->
+    <header class="app-header">
+      <div class="header-logo">
+        <div class="logo-icon">
+          <i data-lucide="database"></i>
+        </div>
+        <div class="logo-text">
+          <h1>BigQuery <span>Release Notes</span></h1>
+          <p class="subtitle">Stay updated with Google Cloud BigQuery developments</p>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <button id="refresh-btn" class="btn btn-primary" title="Refresh Release Notes">
+          <i data-lucide="refresh-cw" id="refresh-icon"></i>
+          <span>Refresh</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Controls Panel: Search & Filters -->
+    <section class="controls-panel">
+      <div class="search-box">
+        <i data-lucide="search" class="search-icon"></i>
+        <input type="text" id="search-input" placeholder="Search updates (e.g. Gemini, external tables, SQL)..." autocomplete="off">
+        <button id="clear-search" class="clear-search-btn" style="display: none;">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      
+      <div class="filter-group">
+        <span class="filter-label">Filter by type:</span>
+        <div class="filter-badges">
+          <button class="filter-chip active" data-filter="all">All</button>
+          <button class="filter-chip" data-filter="Feature">Features</button>
+          <button class="filter-chip" data-filter="Announcement">Announcements</button>
+          <button class="filter-chip" data-filter="Issue">Issues</button>
+          <button class="filter-chip" data-filter="Breaking">Breaking</button>
+          <button class="filter-chip" data-filter="Change">Changes</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Feed Meta / Stats -->
+      <div class="feed-meta">
+        <span class="results-count" id="results-count">Loading release notes...</span>
+        <span class="last-updated" id="last-updated">Not refreshed yet</span>
+      </div>
+
+      <!-- Feed Container -->
+      <div class="feed-container" id="feed-container">
+        <!-- Skeleton Loading Cards -->
+        <div class="skeleton-feed">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Data fetched from official <a href="https://docs.cloud.google.com/feeds/bigquery-release-notes.xml" target="_blank" rel="noopener">BigQuery Release Notes Feed</a>.</p>
+      <p class="copyright">Built with Flask &amp; Vanilla JavaScript &bull; 2026</p>
+    </footer>
+  </div>
+
+  <!-- Tweet Composer Dialog (Modal Dialog with light-dismiss) -->
+  <dialog id="tweet-dialog" closedby="any" aria-labelledby="dialog-title">
+    <div class="dialog-header">
+      <div class="dialog-title-group">
+        <i data-lucide="twitter" class="twitter-icon"></i>
+        <h2 id="dialog-title">Draft Tweet</h2>
+      </div>
+      <button class="close-dialog-btn" id="close-dialog-x" title="Close">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    
+    <div class="dialog-body">
+      <label for="tweet-textarea" class="textarea-label">Customize your tweet text:</label>
+      <textarea id="tweet-textarea" rows="6" maxlength="500" placeholder="What's happening?"></textarea>
+      
+      <div class="tweet-composer-options">
+        <label class="checkbox-container">
+          <input type="checkbox" id="include-link-checkbox" checked>
+          <span class="checkmark"></span>
+          Include reference link
+        </label>
+        <div class="char-counter" id="char-counter">0 / 280</div>
+      </div>
+      
+      <div class="tweet-preview-section">
+        <span class="preview-label">Live Preview:</span>
+        <div class="tweet-preview-box">
+          <div class="preview-header">
+            <div class="preview-avatar"></div>
+            <div class="preview-user-details">
+              <span class="preview-name">Developer Feed</span>
+              <span class="preview-handle">@bq_release_tracker</span>
+            </div>
+          </div>
+          <div class="preview-body" id="live-tweet-preview"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" id="close-dialog-btn">Cancel</button>
+      <button class="btn btn-tweet" id="post-tweet-btn">
+        <i data-lucide="send"></i>
+        <span>Tweet on X</span>
+      </button>
+    </div>
+  </dialog>
+
+  <!-- Notification Toast -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Page Logic Script -->
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
